@@ -1,0 +1,495 @@
+═══════════════════════════════════════════════════════════════════════════
+    EMULATOR SONDY LAMBDA - OPEL ASTRA H 2005
+    Lista Zadań (TODO) - Wydrukuj i odznaczaj!
+═══════════════════════════════════════════════════════════════════════════
+
+Data rozpoczęcia: _______________
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 1: PRZYGOTOWANIE TEORETYCZNE
+───────────────────────────────────────────────────────────────────────────
+
+□ Przeczytać plik INDEX.md (5 min)
+□ Przeczytać plik QUICKSTART.md (10 min)
+□ Przeczytać plik PODSUMOWANIE_PROJEKTU.md (30 min)
+□ Zdecydować: wersja podstawowa czy zaawansowana?
+   ► Wybieram wersję: __________________
+
+□ Jeśli jestem początkujący: przeczytać PRZEWODNIK sekcje teorii (1-2h)
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 2: ZAKUPY
+───────────────────────────────────────────────────────────────────────────
+
+KOMPONENTY PODSTAWOWE:
+□ ESP32 DevKitC V4 (~35 zł)
+□ Kabel USB Micro-B (~8 zł)
+□ Płytka stykowa breadboard (~12 zł)
+□ Przewody jumper M-M (~10 zł)
+□ Rezystory zestaw (~10 zł)
+   □ 2x 10kΩ
+   □ 1x 1kΩ
+   □ 1x 470Ω
+□ Kondensatory (~8 zł)
+   □ 1x 100µF 25V
+   □ 1x 10µF 25V
+   □ 2x 10µF ceramiczny
+□ Regulator LM7805 (~3 zł)
+□ Dioda LED zielona (~1 zł)
+
+NARZĘDZIA (jeśli nie mam):
+□ Multimetr cyfrowy (~30 zł)
+□ Ostrożniaki/szczypce/obcinak (~25 zł)
+□ Lutownica 30-60W (~50 zł) - OPCJONALNE na początek
+
+DO MONTAŻU W AUCIE:
+□ Obudowa hermetyczna IP65 (~15 zł)
+□ Złącza automotive (~20 zł)
+□ Przewody samochodowe 0.75mm² (~12 zł)
+□ Rurki termokurczliwe (~8 zł)
+□ Opaski zaciskowe (~5 zł)
+□ Bezpiecznik 1A (~2 zł)
+
+OPCJONALNIE (wersja zaawansowana):
+□ Moduł CAN Bus MCP2515 (~20 zł)
+□ Opto-izolatory PC817 5szt (~3 zł)
+□ Przewody M-F (~5 zł)
+□ Złącze OBD-II męskie (~12 zł)
+
+SUMA: Podstawowa ~135 zł | Zaawansowana ~185 zł
+
+Zamówiono dnia: _______________
+Status przesyłki: _______________
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 3: INSTALACJA OPROGRAMOWANIA (podczas czekania na przesyłkę)
+───────────────────────────────────────────────────────────────────────────
+
+□ Zainstalować Visual Studio Code
+   Download: https://code.visualstudio.com/
+   Data instalacji: _______________
+
+□ Zainstalować PlatformIO (rozszerzenie w VSC)
+   Extensions → Szukaj "PlatformIO IDE"
+   Data instalacji: _______________
+
+□ Zainstalować sterowniki USB:
+   □ CH340 (jeśli mój ESP32 ma CH340)
+   □ CP2102 (jeśli mój ESP32 ma CP2102)
+   Sprawdzone w Menedżerze urządzeń: _______________
+   Mój port COM: _______________
+
+□ OPCJONALNIE: Zainstalować Claude Code
+   npm install -g @anthropic-ai/claude-code
+   Data instalacji: _______________
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 4: PIERWSZE TESTY (gdy przyjdą elementy)
+───────────────────────────────────────────────────────────────────────────
+
+□ Rozpakować ESP32
+□ Podłączyć ESP32 przez USB do komputera
+   □ Lampka power świeci? TAK / NIE
+   □ Komputer wykrywa? TAK / NIE (port COM: _______)
+
+□ TEST 1: Blink (migająca dioda)
+   □ Stworzyć projekt "test_blink" w PlatformIO
+   □ Wgrać kod z PRZEWODNIKA
+   □ LED miga co 1 sekundę? TAK / NIE
+   Data: _______________
+
+□ TEST 2: Serial Monitor
+   □ Otworzyć Serial Monitor (115200 baud)
+   □ Widzę komunikaty "LED ON/OFF"? TAK / NIE
+   Data: _______________
+
+□ TEST 3: ADC (czytanie napięcia)
+   □ Stworzyć projekt "test_adc"
+   □ Wgrać kod z PRZEWODNIKA
+   □ Połączyć GPIO 34 z GND → Wynik: ~0V
+   □ Połączyć GPIO 34 z 3.3V → Wynik: ~3.3V
+   Data: _______________
+
+Pierwsze testy UKOŃCZONE ✓
+Wszystko działa? TAK / NIE (jeśli NIE → PRZEWODNIK "Co może się zepsuć")
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 5: BUDOWA PROTOTYPU NA BREADBOARDZIE
+───────────────────────────────────────────────────────────────────────────
+
+UWAGA: Przed każdym podłączeniem ODŁĄCZ USB!
+
+□ Umieścić ESP32 na breadboardzie (środek, nad rowkiem)
+
+KROK 1: ZASILANIE
+□ Podłączyć szynę + do VIN
+□ Podłączyć szynę - do GND
+□ Podłączyć kondensator 100µF (+ do szyny +, - do szyny -)
+   SPRAWDZIĆ multimetrem polaryzację!
+
+KROK 2: LED DIAGNOSTYCZNY
+□ Rezystor 470Ω: GPIO 2 → wolna dziurka
+□ LED długa nóżka (+) → ta sama dziurka
+□ LED krótka nóżka (-) → szyna -
+
+KROK 3: DZIELNIK NAPIĘCIA (wejście ADC)
+□ Rezystor 10kΩ #1: 3.3V → punkt środkowy
+□ Rezystor 10kΩ #2: punkt środkowy → GND
+□ Przewód: punkt środkowy → GPIO 34
+□ Rezystor 10kΩ #3: GPIO 34 → GND (pull-down)
+
+KROK 4: FILTR RC (wyjście DAC)
+□ Rezystor 1kΩ: GPIO 25 → punkt wyjściowy
+□ Kondensator 10µF: punkt wyjściowy → GND
+
+□ SPRAWDZIĆ WSZYSTKIE POŁĄCZENIA MULTIMETREM!
+   □ Test ciągłości: szyna + ↔ szyna - = BRAK dźwięku ✓
+   □ Test ciągłości: VIN ↔ szyna + = JEST dźwięk ✓
+   □ Test ciągłości: GND ↔ szyna - = JEST dźwięk ✓
+
+□ Podłączyć USB i zmierzyć napięcia:
+   □ VIN: _______ V (powinno być 4.8-5.2V)
+   □ 3.3V: _______ V (powinno być 3.2-3.4V)
+
+Data budowy: _______________
+Układ zbudowany poprawnie? TAK / NIE
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 6: GENEROWANIE KODU Z CLAUDE CODE
+───────────────────────────────────────────────────────────────────────────
+
+□ Stworzyć folder projektu: lambda-emulator/
+□ Skopiować do folderu plik README.md
+□ Otworzyć folder w Visual Studio Code
+□ Otworzyć terminal w VSC (Ctrl + `)
+□ Uruchomić: claude code
+
+□ Napisać do Claude Code:
+   "Przeczytaj README.md i stwórz kompletną strukturę projektu PlatformIO
+    z kodem dla emulatora sondy lambda"
+
+□ Claude Code wygenerował pliki? TAK / NIE
+   Lista wygenerowanych plików:
+   □ platformio.ini
+   □ src/main.cpp
+   □ src/lambda_sensor.h
+   □ src/lambda_sensor.cpp
+   □ include/config.h
+   □ (inne: ___________________)
+
+□ Skompilować projekt (PlatformIO: Build)
+   Błędy kompilacji? TAK / NIE
+   Jeśli TAK → przekleić błąd do Claude Code i poprosić o naprawę
+
+□ Wgrać kod na ESP32 (PlatformIO: Upload)
+   Upload sukces? TAK / NIE
+
+Data: _______________
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 7: TESTY NA STOLE
+───────────────────────────────────────────────────────────────────────────
+
+□ Otworzyć Serial Monitor (115200 baud)
+□ Widzę logi startowe? TAK / NIE
+   Treść pierwszej linii: _________________________________
+
+TEST 1: Sygnał wejściowy (symulacja)
+□ Dotknąć przewodem GPIO 34 do 3.3V
+   Sensor 1 pokazuje: _______ V (powinno ~3.3V przez dzielnik → ~1.65V)
+   Sensor 2 pokazuje: _______ V (powinno wzrosnąć do ~0.6V)
+
+□ Dotknąć przewodem GPIO 34 do GND
+   Sensor 1 pokazuje: _______ V (powinno ~0V)
+   Sensor 2 pokazuje: _______ V (powinno spaść do ~0.4V)
+
+□ Szybko dotykać na przemian 3.3V i GND
+   Sensor 1: SKACZE (to OK)
+   Sensor 2: STABILNY ~0.5V (to OK) / SKACZE (to ŹLE → zwiększyć SMOOTHING)
+
+TEST 2: Wyjście DAC
+□ Multimetr na punkt wyjściowy (po rezystorze 1kΩ)
+   Napięcie: _______ V (powinno 0.4-0.6V stabilne)
+
+TEST 3: LED diagnostyczny
+□ LED miga wolno (1Hz)? TAK / NIE
+
+Data testów: _______________
+Wszystkie testy OK? TAK / NIE
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 8: PRZYGOTOWANIE DO MONTAŻU W AUCIE
+───────────────────────────────────────────────────────────────────────────
+
+UWAGA: Ten etap TYLKO jeśli testy na stole przeszły pomyślnie!
+
+□ Przygotować obudowę hermetyczną
+□ Zainstalować regulator LM7805 w obudowie
+   (wejście: 12V, wyjście: 5V → do VIN ESP32)
+□ Zainstalować bezpiecznik 1A w linii 12V
+□ Przygotować przewody odpowiedniej długości:
+   □ Czerwony: +12V → regulator (~50cm)
+   □ Czarny: GND masa (~50cm)
+   □ Niebieski: Pierwsza sonda → GPIO 34 (~100cm)
+   □ Żółty: Wyjście GPIO 25 → ECU (~100cm)
+□ Zaizolować połączenia (rurki termokurczliwe)
+
+OPCJONALNIE: Wersja zaawansowana
+□ Podłączyć moduł CAN Bus MCP2515 do ESP32
+   □ VCC → 5V
+   □ GND → GND
+   □ SCK → GPIO 18
+   □ MISO → GPIO 19
+   □ MOSI → GPIO 23
+   □ CS → GPIO 5
+□ Przygotować kabel do OBD-II (CAN H i CAN L)
+□ Przewód do przełącznika LPG → GPIO 33 (przez opto-izolator!)
+□ LED niebieski LPG → GPIO 4 (przez rezystor 470Ω)
+
+Data przygotowania: _______________
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 9: BACKUP PRZED MONTAŻEM
+───────────────────────────────────────────────────────────────────────────
+
+BARDZO WAŻNE! Zrób backup ZANIM cokolwiek odłączysz!
+
+□ Zrobić zdjęcia oryginalnego podłączenia sond lambda:
+   Zdjęcie 1: _______________
+   Zdjęcie 2: _______________
+   Zdjęcie 3: _______________
+
+□ Podłączyć skaner OBD-II i sprawdzić kody błędów:
+   Aktualne błędy: _________________________________
+   (prawdopodobnie P0420 - Catalyst Efficiency Below Threshold)
+
+□ OPCJONALNIE: Wyeksportować ustawienia ECU (jeśli masz takie narzędzie)
+   Backup zapisany: _______________
+
+Data backupu: _______________
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 10: MONTAŻ W SAMOCHODZIE
+───────────────────────────────────────────────────────────────────────────
+
+⚠️  UWAGA: Przeczytaj sekcję BEZPIECZEŃSTWO w PRZEWODNIKU!
+⚠️  ZAWSZE odłączaj MINUS (-) akumulatora przed pracą!
+
+□ Odłączyć MINUS akumulatora
+   Czas odłączenia: _______________
+
+LOKALIZACJA SOND:
+□ Znaleźć pierwszą sondę lambda (przed katalizatorem)
+   Lokalizacja: _________________________________
+□ Znaleźć drugą sondę lambda (za katalizatorem)
+   Lokalizacja: _________________________________
+
+PODŁĄCZENIE:
+□ Podłączyć sygnał pierwszej sondy do GPIO 34
+   (przez dzielnik napięcia - WAŻNE!)
+□ Odłączyć drugą sondę od ECU
+   Zaizolować odłączony przewód drugiej sondy (nie używamy jej)
+□ Podłączyć wyjście emulatora (GPIO 25) do ECU
+   (tam gdzie była druga sonda)
+□ Podłączyć zasilanie +12V (przez bezpiecznik!)
+□ Podłączyć masę GND do masy samochodu
+□ Zamocować obudowę w bezpiecznym miejscu
+   (z dala od gorących części silnika, zabezpieczona przed wodą)
+
+OPCJONALNIE: Wersja zaawansowana
+□ Podłączyć CAN H do pinu 6 OBD-II
+□ Podłączyć CAN L do pinu 14 OBD-II
+□ Znaleźć przewód przełącznika LPG
+   Kolor przewodu: _______________
+□ Podłączyć do GPIO 33 (przez opto-izolator lub dzielnik!)
+
+□ SPRAWDZIĆ WSZYSTKO 3 RAZY!
+   Sprawdzenie 1: _______________
+   Sprawdzenie 2: _______________
+   Sprawdzenie 3: _______________
+
+□ Podłączyć MINUS akumulatora
+   Czas podłączenia: _______________
+
+Data montażu: _______________
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 11: PIERWSZE URUCHOMIENIE
+───────────────────────────────────────────────────────────────────────────
+
+□ Włączyć zapłon (NIE uruchamiać silnika jeszcze)
+   □ Lampki na desce rozdzielczej świecą? TAK / NIE
+   □ Check Engine świeci? (normalne na początku)
+   
+□ OPCJONALNIE: Podłączyć laptop przez Bluetooth/USB i sprawdzić Serial Monitor
+   Logi wyglądają OK? TAK / NIE
+
+□ Uruchomić silnik (na benzynie!)
+   □ Silnik odpala? TAK / NIE
+   □ Silnik pracuje równo? TAK / NIE
+   □ Check Engine świeci? TAK / NIE (może świecić przez ~30 sekund)
+   
+□ Pozostawić na biegu jałowym przez 2-3 minuty
+   Obserwacje: _________________________________
+
+□ Wyczyścić kody błędów skanerem OBD-II
+   Kody przed wyczyszczeniem: _________________________________
+   Kody po wyczyszczeniu: (powinno być 0)
+
+Data pierwszego uruchomienia: _______________
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 12: JAZDA TESTOWA
+───────────────────────────────────────────────────────────────────────────
+
+JAZDA 1: Krótka (10 minut, benzyna)
+□ Trasa: spokojne ulice/drogi
+□ Czas startu: _______________
+□ Czas końca: _______________
+□ Silnik pracował równo? TAK / NIE
+□ Check Engine zapalił się? TAK / NIE
+□ Obserwacje: _________________________________
+
+JAZDA 2: Średnia (30 minut, benzyna)
+□ Trasa: miasto + droga szybkiego ruchu
+□ Czas startu: _______________
+□ Czas końca: _______________
+□ Różne obroty: jałowy, 2000, 3000, 4000 RPM
+□ Silnik OK? TAK / NIE
+□ Check Engine? TAK / NIE
+□ Obserwacje: _________________________________
+
+OPCJONALNIE: Testy na LPG
+□ Przełączyć na LPG
+□ LED niebieski zapalił się? TAK / NIE (wersja zaawansowana)
+□ Jazda 10 minut na LPG
+   Silnik OK? TAK / NIE
+   Check Engine? TAK / NIE
+□ Przełączyć z powrotem na benzynę
+□ LED niebieski zgasł? TAK / NIE
+
+□ Sprawdzić kody błędów skanerem OBD-II:
+   Kody: _________________________________
+   P0420 wrócił? TAK / NIE
+
+Data jazd testowych: _______________
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 13: KALIBRACJA FINALNA (wersja zaawansowana)
+───────────────────────────────────────────────────────────────────────────
+
+Tylko dla wersji z RPM i Learning Mode!
+
+□ Włączyć tryb kalibracji: Serial Monitor → wysłać 'C'
+□ Włączyć Learning Mode: Serial Monitor → wysłać 'L'
+
+□ Jazda kalibracyjna (50-100 km):
+   □ 15 km: bieg jałowy + jazda miejska (benzyna)
+   □ 15 km: przyspieszenia 2500-4000 RPM (benzyna)
+   □ 10 km: wysokie obroty >4000 RPM (benzyna)
+   □ Przełączyć na LPG
+   □ 15 km: bieg jałowy + jazda miejska (LPG)
+   □ 15 km: przyspieszenia (LPG)
+   □ 10 km: wysokie obroty (LPG)
+   
+□ System dostosował parametry automatycznie
+   Sprawdzić w Serial Monitor: "Adaptation optimized: YES"
+
+□ Zapisać parametry: Serial Monitor → wysłać 'S'
+
+□ Sprawdzić czy P0420 nie wrócił po tygodniu:
+   Data sprawdzenia: _______________
+   Kody błędów: _________________________________
+
+Data kalibracji: _______________
+
+
+───────────────────────────────────────────────────────────────────────────
+ETAP 14: FINALIZACJA
+───────────────────────────────────────────────────────────────────────────
+
+□ Projekt działa stabilnie przez minimum 1 tydzień? TAK / NIE
+□ Check Engine nie zapala się? TAK / NIE
+□ P0420 nie wraca? TAK / NIE
+
+□ Zabezpieczenie finalne:
+   □ Sprawdzić wszystkie połączenia
+   □ Dodatkowe opaski zaciskowe na przewodach
+   □ Sprawdzić szczelność obudowy
+   □ Zabezpieczyć przed ruszaniem (np. klej na gorąco)
+
+□ Dokumentacja:
+   □ Zrobić zdjęcia finalnej instalacji
+   □ Zapisać finalne parametry kalibracji
+   □ Zachować backup kodu
+
+Data finalizacji: _______________
+
+
+═══════════════════════════════════════════════════════════════════════════
+GRATULACJE! PROJEKT UKOŃCZONY! 🎉
+═══════════════════════════════════════════════════════════════════════════
+
+Całkowity czas projektu: _______ dni/tygodni
+Całkowity koszt: _______ zł
+Poziom satysfakcji: ☆☆☆☆☆
+
+Notatki końcowe:
+_________________________________________________________________
+_________________________________________________________________
+_________________________________________________________________
+_________________________________________________________________
+
+
+═══════════════════════════════════════════════════════════════════════════
+KONSERWACJA I MONITORING (co miesiąc przez pierwsze 3 miesiące)
+═══════════════════════════════════════════════════════════════════════════
+
+MIESIĄC 1: Data: _______________
+□ Sprawdzić kody błędów OBD-II: _________________________________
+□ Sprawdzić obudowę (wilgoć, uszkodzenia): OK / Problem
+□ Sprawdzić połączenia (luz, korozja): OK / Problem
+□ Check Engine? TAK / NIE
+
+MIESIĄC 2: Data: _______________
+□ Sprawdzić kody błędów OBD-II: _________________________________
+□ Sprawdzić obudowę: OK / Problem
+□ Sprawdzić połączenia: OK / Problem
+□ Check Engine? TAK / NIE
+
+MIESIĄC 3: Data: _______________
+□ Sprawdzić kody błędów OBD-II: _________________________________
+□ Sprawdzić obudowę: OK / Problem
+□ Sprawdzić połączenia: OK / Problem
+□ Check Engine? TAK / NIE
+
+Jeśli po 3 miesiącach wszystko działa OK → sprawdzaj co 6 miesięcy.
+
+
+═══════════════════════════════════════════════════════════════════════════
+W RAZIE PROBLEMÓW
+═══════════════════════════════════════════════════════════════════════════
+
+1. PRZEWODNIK_DLA_POCZATKUJACYCH.md → "Co może się zepsuć"
+2. QUICKSTART.md → "Najczęstsze Problemy"
+3. Claude Code → "Problem: [opis]"
+4. Forum OPEL: astra-owners-network.co.uk
+
+
+═══════════════════════════════════════════════════════════════════════════
+Koniec dokumentu TODO
+Wersja 1.0 | 2025-10-23
+═══════════════════════════════════════════════════════════════════════════
